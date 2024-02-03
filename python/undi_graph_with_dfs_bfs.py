@@ -26,25 +26,7 @@ class undi_graph():
                         stack.append(vertex)
                         print(vertex)
                         unvisited.remove(vertex)
-            
     def dfs(self):
-        unvisited = self.V.copy()
-        queue = []
-        while len(unvisited)!=0:
-            queue.append(unvisited[0])
-            print(unvisited[0])
-            
-            del unvisited[0]
-            
-            while (len(queue)!=0):
-                cur = queue[-1]
-                queue.pop()
-                for val in self.neighbors[cur]:
-                    if val in unvisited:
-                        queue.append(val)
-                        unvisited.remove(val)
-                        print(val)
-    def dfs_recur(self):
         unvisited = self.V.copy()
         
         self.dfs_recur_help(unvisited,unvisited[0])
@@ -53,8 +35,12 @@ class undi_graph():
     def dfs_recur_help(self, unvisited, v):
         if v in unvisited:
             unvisited.remove(v)
+            # preorder
+            print(v)
             for vertex in self.neighbors[v]:
+                
                 self.dfs_recur_help(unvisited, vertex)
+            # postorder
             print(v)
             
 
@@ -66,5 +52,5 @@ graph.bfs()
 print("\n")
 graph.dfs()
 print("\n")
-graph.dfs_recur()
+
             

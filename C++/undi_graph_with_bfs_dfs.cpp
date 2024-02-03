@@ -23,7 +23,7 @@ class undiGraph{
 
         void bfs();
         void dfs();
-        void dfs_recur();
+        
         void help_recur(int i, vector<int>& unvisited);
 
 };
@@ -33,8 +33,7 @@ int main(){
     int vnum = 10;
     vector<vector<int>> e{{0,1},{1,4},{1,5},{2,3},{4,6},{5,6},{5,7},{6,9},{7,8}};
     undiGraph G(e, vnum);
-    cout << "Okay in construct\n";
-
+    
     G.bfs();
     cout << endl;
     G.dfs();
@@ -70,29 +69,19 @@ void undiGraph::bfs(){
 
 void undiGraph::dfs(){
     vector<int> unvisited(vnum, 1);
-    list<int> stack;
-    for (int i=0;i <vnum; i++){
-        if (unvisited[i]==1){
-            unvisited[i] = 0;
-            cout << i << "\t";
-            stack.push_back(i);
-            while (!stack.empty()){
-                int cur = stack.back();
-                // preorder 
-                //cout << cur << "\t";
-                stack.pop_back();
-                vector<int> cur_edge = edge[cur];
-                cout << endl;
-                for (int node:cur_edge){
-                    cout << node << " ";
-                    if(unvisited[node] == 1){
-                        unvisited[node] = 0;
-                        stack.push_back(node);
-                        // inorder
-                        //cout << node << "\t";
-                    }
-                }
-            }
+    for (int i = 0; i < vnum; i++){
+        help_recur(i, unvisited);
+    }
+}
+
+void undiGraph::help_recur(int i, vector<int>& unvisited){
+    if (unvisited[i] == 1){
+        unvisited[i] = 0;
+        // preoder print
+        for (int node:edge[i]){
+            help_recur(node, unvisited);
         }
+        // postorder print
+        cout << i << "\t";
     }
 }
