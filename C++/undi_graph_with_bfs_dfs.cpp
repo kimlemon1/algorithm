@@ -3,6 +3,7 @@
 #include <list>
 using namespace std;
 
+// dict 형태 edge
 class undiGraph{
     vector<vector<int>> edge;
     int vnum;
