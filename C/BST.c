@@ -2,7 +2,7 @@
 #include <stdlib.h>
  
 struct node {
-    int key;
+    int val;
     struct node *left, *right;
 };
  
@@ -11,7 +11,7 @@ struct node* newNode(int item)
 {
     struct node* temp
         = (struct node*)malloc(sizeof(struct node));
-    temp->key = item;
+    temp->val = item;
     temp->left = temp->right = NULL;
     return temp;
 }
@@ -25,9 +25,9 @@ struct node* insert(struct node* node, int key)
         return newNode(key);
  
     // Otherwise, recur down the tree
-    if (key < node->key)
+    if (key < node->val)
         node->left = insert(node->left, key);
-    else if (key > node->key)
+    else if (key > node->val)
         node->right = insert(node->right, key);
  
     // Return the (unchanged) node pointer
@@ -38,18 +38,18 @@ struct node* insert(struct node* node, int key)
 struct node* search(struct node* root, int key)
 {
     // Base Cases: root is null or key is present at root
-    if (root == NULL || root->key == key)
+    if (root == NULL || root->val == key)
         return root;
  
     // Key is greater than root's key
-    if (root->key < key)
+    if (root->val < key)
         return search(root->right, key);
  
     // Key is smaller than root's key
     return search(root->left, key);
 }
  
-struct node* deleteNode(struct node* root, int k)
+struct node* deleteNode(struct node* root, int key)
 {
     // Base case
     if (root == NULL)
@@ -57,12 +57,12 @@ struct node* deleteNode(struct node* root, int k)
  
     // Recursive calls for ancestors of
     // node to be deleted
-    if (root->key > k) {
-        root->left = deleteNode(root->left, k);
+    if (root->val > key) {
+        root->left = deleteNode(root->left, key);
         return root;
     }
-    else if (root->key < k) {
-        root->right = deleteNode(root->right, k);
+    else if (root->val < key) {
+        root->right = deleteNode(root->right, key);
         return root;
     }
  
@@ -105,7 +105,7 @@ struct node* deleteNode(struct node* root, int k)
             succParent->right = succ->right;
  
         // Copy Successor Data to root
-        root->key = succ->key;
+        root->val = succ->val;
  
         // Delete Successor and return root
         free(succ);
@@ -117,7 +117,7 @@ void inorder(struct node* root)
 {
     if (root != NULL) {
         inorder(root->left);
-        printf("%d ", root->key);
+        printf("%d ", root->val);
         inorder(root->right);
     }
 }

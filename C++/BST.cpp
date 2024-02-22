@@ -77,6 +77,7 @@ struct node* deleteNode(node* root, int k)
     // If one of the children is empty
     if (root->left == NULL) {
         node* temp = root->right;
+        // 동적할당 free하기
         delete root;
         return temp;
     }
