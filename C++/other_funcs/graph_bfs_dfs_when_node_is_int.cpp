@@ -4,6 +4,9 @@
 using namespace std;
 
 // dict 형태 edge
+// node가 숫자일 때 가능!
+
+
 class undiGraph{
     vector<vector<int>> edge;
     int vnum;
@@ -12,7 +15,7 @@ class undiGraph{
         :vnum(v_num){
             // 벡터 크기 잡아야한다!
             edge.resize(vnum);
-            // 우리 아는 딕셔너리 형태로 바꿈
+            // 우리 아는 딕셔너리 형태로 바꿈, 숫자니까 key를 인덱스로 대체, 문자면 map 필요!
             for (vector<int> set:e){
                 int x = set[0];
                 int y = set[1];

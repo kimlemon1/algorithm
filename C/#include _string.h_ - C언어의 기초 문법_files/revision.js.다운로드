@@ -1,0 +1,197 @@
+var VersionManager;
+
+VersionManager = (function() {
+  class VersionManager {
+    constructor(selector) {
+      this.indicator = new ProcessIndicator(`${selector} hgroup`, {
+        lines: 9,
+        length: 4,
+        radius: 5,
+        width: 3
+      });
+      DOMLoader.register(() => {
+        this.panel = $(selector);
+        if (this.panel.size()) {
+          this.article = $('div#cols article');
+          this.close = $(`${selector} button.btn_close`);
+          this.initialize();
+          //@curtain = new Curtain @panel
+          //do @curtain.destatic
+          //do @curtain.transparent
+          $(document).on('click', '#version', () => {
+            if (this.panel.is(':hidden')) {
+              this.show();
+            }
+            return false;
+          });
+          $(document).on('click', `${selector} button.btn_close`, () => {
+            return this.hide();
+          });
+          $(document).on('click', `${selector} table.select tbody tr`, (event) => {
+            var compare, current, old_datetime, revision_id, row, url;
+            row = $(event.currentTarget);
+            $('table.select tbody tr.selected', this.panel).removeClass('selected');
+            if (row.hasClass('current')) {
+              this.restore();
+              $('div.btns button.restore', this.panel).prop('disabled', true);
+              return $('#compare').prop('disabled', true);
+            } else {
+              current = $('table.select tbody tr.current', this.panel);
+              old_datetime = $('td.updated', row).text();
+              $('#selected-revision', this.panel).text(old_datetime);
+              $('div.btns button.restore', this.panel).prop('disabled', $('td.updated', current).text() === old_datetime);
+              $('#compare').prop('disabled', $('td.updated', current).text() === old_datetime);
+              compare = $('input#compare:checked', this.panel).size() === 1;
+              revision_id = row.data('value');
+              url = base_url + 'revision/compare_ajax';
+              if (revision_id > 0) {
+                row.addClass('selected');
+                url += location.pathname + '/' + revision_id + (compare ? '?diff=1' : '?diff=0');
+                return this.get(url);
+              } else {
+                return this.restore();
+              }
+            }
+          });
+          $(document).on('change', `${selector} #compare`, (event) => {
+            var compare, revision_id, url;
+            compare = $(event.target);
+            revision_id = $('table.select tr.selected', this.panel).data('value');
+            url = base_url + 'revision/compare_ajax' + location.pathname + '/' + revision_id + (compare.prop('checked') ? '?diff=1' : '?diff=0');
+            return this.get(url);
+          });
+          $(document).on('click', `${selector} div.btns button.restore`, (event) => {
+            return xconfirm(() => {
+              var revision_id, row;
+              row = $('table.select tr.selected', this.panel).clone(true);
+              revision_id = row.data('value');
+              return $.post(base_url + 'revision/restore_ajax' + location.pathname + '/' + revision_id, (response) => {
+                var container;
+                if (response.result) {
+                  container = $('table.select tbody', this.panel);
+                  container.find('tr.current').removeClass('current').data('value', response.data.revision_id);
+                  row.data('value', 0).addClass('current').removeClass('selected').find('td.updated time').text(response.data.updated);
+                  container.prepend(row);
+                  $('#version span.count').text(Number($('#version span.count').text()) + 1);
+                  this.article.html(response.data.content);
+                  this.initialize();
+                  return xalert(function() {
+                    return location.reload();
+                  }, '복원되었습니다.', {
+                    'modal': true
+                  });
+                } else {
+                  return xalert(null, response.msg, {
+                    'modal': true
+                  });
+                }
+              }, 'json');
+            }, null, '정말 복원하시겠습니까?', {
+              'modal': true
+            });
+          });
+          $(window).on('scroll', () => {
+            var aside, offset, top;
+            top = $(window).scrollTop();
+            offset = this.panel.offset();
+            aside = $('#cols aside');
+            if (top > aside.offset().top) {
+              if (!this.panel.hasClass('fixed')) {
+                this.panel.addClass('fixed');
+                return this.panel.css('left', offset.left + 'px');
+              }
+            } else {
+              this.panel.removeClass('fixed');
+              return this.panel.css('left', 0);
+            }
+          });
+          return $(window).on('resize', () => {
+            var offset;
+            if (this.panel.hasClass('fixed')) {
+              offset = $('#cols').offset();
+              return this.panel.css('left', offset.left);
+            }
+          });
+        }
+      });
+    }
+
+    initialize() {
+      var current;
+      $('table.select tbody tr.selected', this.panel).removeClass('selected');
+      current = $('table.select tbody tr.current td.updated time', this.panel).text();
+      $('div.selected table tbody tr.current td.datetime time', this.panel).text(current);
+      $('div.selected table tbody tr.selected td.datetime time', this.panel).text(current);
+      $('#selected-revision').text('');
+      $('div.btns button.restore', this.panel).prop('disabled', true);
+      return this.original = this.article.html();
+    }
+
+    get(url) {
+      this.indicator.start();
+      this.close.hide();
+      return $.getJSON(url, (response) => {
+        this.indicator.stop();
+        this.close.show();
+        if (!response.result) {
+          return alert(response.msg);
+        } else {
+          return this.article.html(response.data.content);
+        }
+      });
+    }
+
+    //@article.find('div.tags').append '<div id="revision_id">저장된 문서 ' + response.revision_id + '</div>'
+
+      //do SyntaxHighlighter.run
+    restore() {
+      return this.article.html(this.original);
+    }
+
+    show() {
+      this.indicator.start();
+      $.getJSON(base_url + 'revision/get_ajax/' + topic_id, (response) => {
+        var entry, i, len, point, revisions, row;
+        point = $('table.select tbody', this.panel);
+        revisions = response.data.revisions;
+        for (i = 0, len = revisions.length; i < len; i++) {
+          entry = revisions[i];
+          row = `<tr data-value=\"${entry.id}\"> <td class=\"updated\"><time>${entry.updated}</time></td> <td class=\"user\">${entry.user.nickname}</td> </tr>`;
+          point.append(row);
+        }
+        this.indicator.stop();
+        return this.panel.show();
+      });
+      //do @curtain.show
+      return false;
+    }
+
+    hide(restore = true) {
+      var old_datetime, row;
+      this.panel.hide();
+      if (restore) {
+        //do @curtain.hide
+        this.restore();
+      }
+      row = $('table.select tbody tr.selected', this.panel).removeClass('selected');
+      old_datetime = $('table.select tbody tr.current td.updated', this.panel).text();
+      return $('#selected-revision', this.panel).text(old_datetime);
+    }
+
+  };
+
+  VersionManager.prototype.panel = void 0;
+
+  VersionManager.prototype.original = void 0;
+
+  VersionManager.prototype.indicator = void 0;
+
+  VersionManager.prototype.curtain = void 0;
+
+  VersionManager.prototype.close = void 0;
+
+  return VersionManager;
+
+}).call(this);
+
+new VersionManager('div.revision-control');

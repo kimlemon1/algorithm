@@ -59,6 +59,7 @@ int main(void){
     init(g);
     for(int i=0;i<7;i++)
         insert_vertex(g,i); //그래프 정점 생성
+        
     insert_edge(g,0,1);  // 그래프 간선 생성
     insert_edge(g,0,2);
     insert_edge(g,1,3);

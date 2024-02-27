@@ -1,0 +1,52 @@
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);.hidden{display:none !important}label{cursor:pointer}
+strong,b{font-weight:bold}em,i{font-style:italic}.cke_panel_listItem{font-size:.75em;font-family:NanumGothic,sans-serif}
+.cke_panel_listItem p,.cke_panel_listItem h2,.cke_panel_listItem h3,.cke_panel_listItem h4,.cke_panel_listItem h5,.cke_panel_listItem h6{-webkit-margin-before:0 !important;-webkit-margin-after:0 !important;padding:.3em 0}
+.cke_panel_listItem h2{border-bottom:1px dotted #858585;font-size:1.6em;font-weight:bold;color:#333;height:1.7em;line-height:1.7em;padding-bottom:.2em}
+.cke_panel_listItem h3{font-size:1.5em;font-weight:bold;color:#333}.cke_panel_listItem h4{font-size:1.4em;font-weight:bold;color:#333}
+.cke_panel_listItem h5{font-size:1.2em;font-weight:bold;color:#333}.cke_panel_listItem h6{font-size:1.1em;font-weight:bold;color:#333}
+.cke_panel_listItem p{margin:1em 0}.cke_panel_listItem .notice,.cke_panel_listItem .warning,.cke_panel_listItem .note{padding:5px}
+.cke_panel_listItem .notice{background-color:#fcf8e3;color:#b98d3f}.cke_panel_listItem .warning{background-color:#f2dede;color:#b94242}
+.cke_panel_listItem .note{background-color:#d9edf7;color:#3383aa}@media screen and (min-device-width:768px) and (max-device-width:1024px){body.cke_editable,article{font-size:1.4em !important}
+}body.cke_editable{font-size:.825em !important;overflow:hidden}body.cke_editable a{cursor:pointer}
+body.cke_editable pre{border:1px solid #ccc;cursor:pointer;margin:10px 0}body.cke_editable,article div#content,form#diff_dialog div.body div.wrapper{font-family:NanumGothic,sans-serif;line-height:1.8;font-size:1.1em;padding:10px;color:#666}
+body.cke_editable a,article div#content a,form#diff_dialog div.body div.wrapper a{color:#09f}
+body.cke_editable a:link,article div#content a:link,form#diff_dialog div.body div.wrapper a:link,body.cke_editable a:visited a:active,article div#content a:visited a:active,form#diff_dialog div.body div.wrapper a:visited a:active{color:#09f}
+body.cke_editable a:hover,article div#content a:hover,form#diff_dialog div.body div.wrapper a:hover{color:#06f;text-decoration:underline}
+body.cke_editable h2,article div#content h2,form#diff_dialog div.body div.wrapper h2,body.cke_editable h3,article div#content h3,form#diff_dialog div.body div.wrapper h3,body.cke_editable h4,article div#content h4,form#diff_dialog div.body div.wrapper h4,body.cke_editable h5,article div#content h5,form#diff_dialog div.body div.wrapper h5,body.cke_editable h6,article div#content h6,form#diff_dialog div.body div.wrapper h6{margin:1em 0 .5em 0}
+body.cke_editable h2,article div#content h2,form#diff_dialog div.body div.wrapper h2{border-bottom:1px dotted #858585;font-size:1.6em;font-weight:bold;color:#333;padding-bottom:.2em}
+body.cke_editable h3,article div#content h3,form#diff_dialog div.body div.wrapper h3{font-size:1.6em;font-weight:bold;color:#333}
+body.cke_editable h4,article div#content h4,form#diff_dialog div.body div.wrapper h4{font-size:1.4em;font-weight:bold;color:#333}
+body.cke_editable h5,article div#content h5,form#diff_dialog div.body div.wrapper h5{font-size:1.2em;font-weight:bold;color:#333}
+body.cke_editable h6,article div#content h6,form#diff_dialog div.body div.wrapper h6{font-size:1.1em;font-weight:bold;color:#333}
+body.cke_editable p,article div#content p,form#diff_dialog div.body div.wrapper p{margin:1em 0}
+body.cke_editable ol,article div#content ol,form#diff_dialog div.body div.wrapper ol{list-style-type:decimal;margin:0 0 0 3em}
+body.cke_editable ol li,article div#content ol li,form#diff_dialog div.body div.wrapper ol li{list-style-type:decimal}
+body.cke_editable ul,article div#content ul,form#diff_dialog div.body div.wrapper ul{list-style-type:circle;margin:0 0 0 3em}
+body.cke_editable ul li,article div#content ul li,form#diff_dialog div.body div.wrapper ul li{list-style-type:circle}
+body.cke_editable img,article div#content img,form#diff_dialog div.body div.wrapper img{background-color:#fff}
+body.cke_editable table,article div#content table,form#diff_dialog div.body div.wrapper table{width:100%}
+body.cke_editable table th,article div#content table th,form#diff_dialog div.body div.wrapper table th{background-color:#eee;border:1px solid #ccc;padding:5px}
+body.cke_editable table td,article div#content table td,form#diff_dialog div.body div.wrapper table td{border:1px solid #ccc;padding:5px}
+body.cke_editable div.notice,article div#content div.notice,form#diff_dialog div.body div.wrapper div.notice,body.cke_editable p.notice,article div#content p.notice,form#diff_dialog div.body div.wrapper p.notice{background-color:#fcf8e3;color:#b98d3f;padding:5px;margin:1em 0}
+body.cke_editable div.notice strong,article div#content div.notice strong,form#diff_dialog div.body div.wrapper div.notice strong,body.cke_editable p.notice strong,article div#content p.notice strong,form#diff_dialog div.body div.wrapper p.notice strong{color:#333}
+body.cke_editable div.warning,article div#content div.warning,form#diff_dialog div.body div.wrapper div.warning,body.cke_editable p.warning,article div#content p.warning,form#diff_dialog div.body div.wrapper p.warning{background-color:#f2dede;color:#b94242;padding:5px;margin:1em 0}
+body.cke_editable div.warning strong,article div#content div.warning strong,form#diff_dialog div.body div.wrapper div.warning strong,body.cke_editable p.warning strong,article div#content p.warning strong,form#diff_dialog div.body div.wrapper p.warning strong{color:#333}
+body.cke_editable div.note,article div#content div.note,form#diff_dialog div.body div.wrapper div.note,body.cke_editable p.note,article div#content p.note,form#diff_dialog div.body div.wrapper p.note{background-color:#d9edf7;padding:5px;color:#3383aa;margin:1em 0}
+body.cke_editable div.note strong,article div#content div.note strong,form#diff_dialog div.body div.wrapper div.note strong,body.cke_editable p.note strong,article div#content p.note strong,form#diff_dialog div.body div.wrapper p.note strong{color:#333}
+body.cke_editable div.notice>p:first-child,article div#content div.notice>p:first-child,form#diff_dialog div.body div.wrapper div.notice>p:first-child,body.cke_editable div.warning>p:first-child,article div#content div.warning>p:first-child,form#diff_dialog div.body div.wrapper div.warning>p:first-child,body.cke_editable div.note>p:first-child,article div#content div.note>p:first-child,form#diff_dialog div.body div.wrapper div.note>p:first-child{margin-top:0}
+body.cke_editable div.notice>p:last-child,article div#content div.notice>p:last-child,form#diff_dialog div.body div.wrapper div.notice>p:last-child,body.cke_editable div.warning>p:last-child,article div#content div.warning>p:last-child,form#diff_dialog div.body div.wrapper div.warning>p:last-child,body.cke_editable div.note>p:last-child,article div#content div.note>p:last-child,form#diff_dialog div.body div.wrapper div.note>p:last-child{margin-bottom:0}
+body.cke_editable blockquote,article div#content blockquote,form#diff_dialog div.body div.wrapper blockquote{background-image:url("../../img/desktop/quotes.png");background-repeat:no-repeat;background-position:3px -7px;padding-left:35px}
+body.cke_editable pre,article div#content pre,form#diff_dialog div.body div.wrapper pre,body.cke_editable code,article div#content code,form#diff_dialog div.body div.wrapper code{font-family:Courier,monospace;font-size:12px}
+body.cke_editable figure,article div#content figure,form#diff_dialog div.body div.wrapper figure{position:relative}
+body.cke_editable figure.center,article div#content figure.center,form#diff_dialog div.body div.wrapper figure.center{margin:15px auto 20px}
+body.cke_editable figure.left,article div#content figure.left,form#diff_dialog div.body div.wrapper figure.left{float:left}
+body.cke_editable figure.right,article div#content figure.right,form#diff_dialog div.body div.wrapper figure.right{float:right}
+body.cke_editable figure img.thumbnail,article div#content figure img.thumbnail,form#diff_dialog div.body div.wrapper figure img.thumbnail{cursor:pointer}
+body.cke_editable figure figcaption,article div#content figure figcaption,form#diff_dialog div.body div.wrapper figure figcaption{font-size:11px;line-height:1.3em;text-align:left}
+body.cke_editable figure div.btn_enlargable,article div#content figure div.btn_enlargable,form#diff_dialog div.body div.wrapper figure div.btn_enlargable{cursor:pointer;position:absolute;right:10px;top:10px;background-color:#fff;font-size:11px;padding-left:5px;padding-right:5px;border:1px solid #aaa}
+body.cke_editable .diff-html-added,article div#content .diff-html-added,form#diff_dialog div.body div.wrapper .diff-html-added{background-color:#cfc}
+body.cke_editable .diff-html-removed,article div#content .diff-html-removed,form#diff_dialog div.body div.wrapper .diff-html-removed{background-color:#fcc}
+body.cke_editable div.movie,article div#content div.movie,form#diff_dialog div.body div.wrapper div.movie{margin:20px 0;background-image:url("../../img/desktop/bg_movie.gif");background-position:center center;background-repeat:no-repeat;text-align:center;line-height:11px}
+body.cke_editable div.movie iframe,article div#content div.movie iframe,form#diff_dialog div.body div.wrapper div.movie iframe{-moz-box-shadow:inset 0 0 10px #666;-webkit-box-shadow:0 0 10px #666;-o-box-shadow:inset 0 0 10px #666;box-shadow:0 0 10px #666}
+body.cke_editable div.movie div.wrapper,article div#content div.movie div.wrapper,form#diff_dialog div.body div.wrapper div.movie div.wrapper{text-align:center}
+body#content pre{overflow-x:auto}body.cke_editable figure figcaption{cursor:pointer}

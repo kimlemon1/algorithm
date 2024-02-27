@@ -1,0 +1,132 @@
+var TopicOrdering;
+
+TopicOrdering = (function() {
+  class TopicOrdering {
+    constructor(selector1, selector2) {
+      DOMLoader.register(() => {
+        this.panel = $(selector1);
+        this.btn = $(selector2);
+        this.panel.nestedSortable({
+          disableNesting: 'no-nest',
+          forcePlaceholderSize: true,
+          handle: 'div',
+          helper: 'clone',
+          items: 'li',
+          //maxLevels: 3
+          opacity: .6,
+          placeholder: 'placeholder',
+          //revert: 250
+          //tabSize: 25
+          tolerance: 'pointer',
+          toleranceElement: '> div'
+        });
+        return this.panel.nestedSortable('disable');
+      });
+      this.dialog = new ConfirmDialog();
+      this.dialog.unstage();
+      this.dialog.pin();
+      $(document).on('click', selector2, () => {
+        return this.start();
+      });
+      $(window).on('scroll', () => {
+        var aside, dialog, offset, top;
+        dialog = this.dialog.dom;
+        top = $(window).scrollTop();
+        offset = dialog.offset();
+        aside = $('#cols aside');
+        if (aside.size()) {
+          if (top > aside.offset().top) {
+            if (!dialog.hasClass('fixed')) {
+              dialog.addClass('fixed');
+              return dialog.css('left', offset.left + 'px');
+            }
+          } else {
+            dialog.removeClass('fixed');
+            return dialog.css('left', aside.width() + 'px');
+          }
+        }
+      });
+      $(window).on('resize', () => {
+        var dialog, offset;
+        dialog = this.dialog.dom;
+        if (dialog.hasClass('fixed')) {
+          offset = $('#cols').offset();
+          return dialog.css('left', offset.left);
+        }
+      });
+    }
+
+    start() {
+      this.original = this.panel.html();
+      this.panel.nestedSortable('enable');
+      this.panel.addClass('draggable').removeClass('no_draggable');
+      $('#topic_list_index').addClass('prevent_default');
+      this.dialog.show((() => {
+        return this.save();
+      }), (() => {
+        return this.restore();
+      }), '챕터를 드래그앤드롭해서 위치를 이동시켜 주세요.', {
+        id: 'topic_order_dialog',
+        width: 230,
+        modal: false,
+        label: {
+          positive: '저장',
+          negative: '취소'
+        }
+      });
+      this.dialog.dom.appendTo('#cols > div.wrapper');
+      $(window).trigger('scroll');
+      return false;
+    }
+
+    save() {
+      this.panel.nestedSortable('disable');
+      this.panel.addClass('no_draggable').removeClass('draggable');
+      $('#topic_list_index').removeClass('prevent_default');
+      return $.ajax({
+        url: base_url + 'topic/position_ajax/' + path_context,
+        type: 'post',
+        dataType: 'json',
+        data: {
+          data: $('#topic_list_tree').nestedSortable('toHierarchy'),
+          startDepthCount: 0
+        },
+        success: function(response) {
+          var m, manager;
+          if (response.result) {
+            m = new Message('변경했습니다');
+            manager = MessageManager.get();
+            return manager.register(m);
+          }
+        }
+      });
+    }
+
+    restore() {
+      this.panel.nestedSortable('disable');
+      this.panel.addClass('no_draggable').removeClass('draggable');
+      this.panel.html(this.original);
+      return $('#topic_list_index').removeClass('prevent_default');
+    }
+
+  };
+
+  TopicOrdering.prototype.btn = void 0;
+
+  TopicOrdering.prototype.dialog = void 0;
+
+  TopicOrdering.prototype.panel = void 0;
+
+  TopicOrdering.prototype.original = void 0;
+
+  return TopicOrdering;
+
+}).call(this);
+
+new TopicOrdering('#topic_list_tree', '#order');
+
+$(document).on('click', '#topic_list_index a', function(event) {
+  if ($('#topic_list_index').hasClass('prevent_default')) {
+    return event.preventDefault();
+  }
+});
