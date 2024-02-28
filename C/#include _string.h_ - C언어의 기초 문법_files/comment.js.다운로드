@@ -1,0 +1,574 @@
+// 코멘트 액션
+(function($) {
+  var cmtContentWithoutLogin, dialogDelete, filterComment, form, list, options, page, replyIndicator, target;
+  form = $('form#comment_new_form');
+  list = $('#comment_list');
+  replyIndicator = $('#reply_indicator');
+  cmtContentWithoutLogin = $('#cmt_content_without_login');
+  page = 1;
+  dialogDelete = new ConfirmDialog();
+  dialogDelete.unstage();
+  dialogDelete.pin();
+  dialogDelete.whitify();
+  $.support.touch = document.ontouchend !== void 0;
+  if ($.support.touch) {
+    $(document.body).addClass('touch');
+  }
+  options = {
+    id: 'comment_delete_dialog',
+    modal: false,
+    width: 240,
+    label: {
+      positive: '삭제',
+      negative: '취소'
+    }
+  };
+  cmtContentWithoutLogin.on('click', function() {
+    return location.href = $(this).data('login-url');
+  });
+  $('textarea', form).on('focus', function() {
+    return form.addClass('extended');
+  });
+  replyIndicator.find('a.btn_unchain').on('click', function() {
+    replyIndicator.slideUp();
+    replyIndicator.find('input[name=parent]').val('');
+    $('div.column_left', form).css('visibility', 'visible');
+    return false;
+  });
+  form.on('submit', function() {
+    var content, data, indicator, password, text, username;
+    text = form.find('.comment_form_footer button span');
+    data = {
+      course_id: $('input[name=course_id]', form).val(),
+      module_id: $('input[name=module_id]', form).val(),
+      topic_id: $('input[name=topic_id]', form).val(),
+      is_question: $('input[name=is_question]:checked', form).size() ? 'yes' : 'no'
+    };
+    if (!user_id) {
+      username = $('input[name=username]', form).val();
+      password = $('input[type=password]', form).val();
+      if (username.length === 0) {
+        xalert(null, '이름을 입력해 주세요.', {
+          modal: true
+        });
+        return false;
+      } else if (password.length === 0) {
+        xalert(null, '비밀번호를 입력해 주세요.', {
+          modal: true
+        });
+        return false;
+      }
+      data.username = username;
+      data.password = password;
+    }
+    content = $('textarea', form).val();
+    if (content.length === 0) {
+      xalert(null, '댓글 내용을 입력해 주세요.', {
+        modal: true
+      });
+      return false;
+    }
+    indicator = new ProcessIndicator('#comment_new_form div.comment_form_footer button[type=submit]', PROCESSINDICATOR_TINY, '#fff');
+    indicator.start();
+    text.css('visibility', 'hidden');
+    data.content = content;
+    data.parent = replyIndicator.find('input[name=parent]').val();
+    ga('send', 'event', 'Participation', 'comment_add', path_context + (topic_id ? '/' + topic_id : '') + ', ' + document.title, {
+      useBeacon: true
+    });
+    $.post(form.attr('action'), data, function(response) {
+      var buttons, template;
+      if (response.result) {
+        template = $(`<li data-id="${response.data.id}" data-is-question="${response.data.is_question}">
+	<div class="profile_image">
+		<img class="profile_icon" data-id="${response.data.user_id}" src="${response.data.user_pict}" alt="">
+	</div>
+
+	<div class="name time">
+		<strong>${response.data.username}</strong><a name="comment${response.data.id}"><time datetime="${response.data.created.original}">${response.data.created.relative}</time></a>
+	</div>
+
+	<div class="comment_content">
+		${response.data.description}
+	</div>
+</li>`);
+        if (response.data.parent > 0) {
+          template.append(`<dl class="parents">
+	<dt><a href="#" data-parent="${response.data.parent}">대화보기</a><span></span></dt>
+	<dd>
+		<ul></ul>
+	</dd>
+</dl>`);
+        }
+        buttons = '<div class="buttons">';
+        if (user_id) {
+          if (user_id === response.data.user_id) {
+            buttons += `<a class="icon block reply" href="#"><span class="ico ico_reply"></span> 답글</a>|<a class="icon block edit" href="#"><span class="ico ico_modify"></span> 수정</a>|<a class="icon block delete" href="#" data-user_id="${response.data.user_id}"><span class="ico ico_close"></span> 삭제</a>`;
+          } else {
+            buttons += '<a class="icon block reply" href="#"><span class="ico ico_reply"></span> 답글</a>';
+          }
+        } else {
+          if (!response.data.user_id) {
+            buttons += '<a class="icon block reply" href="#"><span class="ico ico_reply"></span> 답글</a>|<a class="icon block edit" href="#"><span class="ico ico_modify"></span> 수정</a>|<a class="icon block delete" href="#" data-user_id="0"><span class="ico ico_close"></span> 삭제</a>';
+          } else {
+            buttons += '<a class="icon block reply" href="#"><span class="ico ico_reply"></span> 답글</a>';
+          }
+        }
+        buttons += '</div>';
+        template.append(buttons);
+        list.prepend(template.hide());
+        //setFlash template
+        template.slideDown();
+        $('dl input, dl textarea', form).val('');
+        replyIndicator.slideUp();
+      } else {
+        xalert(null, response.msg, {
+          modal: true
+        });
+      }
+      indicator.stop();
+      return text.css('visibility', 'visible');
+    }, 'json');
+    return false;
+  });
+  if (!$(document.body).hasClass('touch')) {
+    $(document).on('mouseenter', list.selector + ' > li', function() {
+      return $(this).find('> div.buttons').fadeIn();
+    });
+    $(document).on('mouseleave', list.selector + ' > li', function() {
+      $(this).find('> div.buttons').hide();
+      return $('#comment_delete_dialog').hide().remove();
+    });
+  }
+  $(document).on('click', list.selector + ' > li > dl > dt a[data-parent]', function() {
+    var drawer, indicator, pointer;
+    drawer = $(this).parents('dl').find('dd');
+    if (drawer.is(':hidden')) {
+      if ($(this).data('loaded')) {
+        drawer.show();
+        $(this).text('대화닫기');
+      } else {
+        pointer = $(this).parent().find('span');
+        indicator = new ProcessIndicator(pointer, PROCESSINDICATOR_TINY);
+        indicator.start();
+        $.post(`${base_url}/comment/get_parents_ajax/` + $(this).data('parent'), (response) => {
+          var comment, i, index, len, point, ref;
+          if (response.errorCode) {
+            xalert(null, '정보를 가져오지 못했습니다.', {
+              modal: true
+            });
+          } else {
+            point = drawer.find('ul');
+            ref = response.data;
+            for (index = i = 0, len = ref.length; i < len; index = ++i) {
+              comment = ref[index];
+              if (comment.is_deleted === 'yes') {
+                point.append(`<li class="deleted"><div class="profile_image small"><img class="profile_icon" data-id="${comment.user_id}" src="${comment.user_pict}" alt=""></div>
+	<div class="comment_content small">
+		<span>${comment.description}</span>
+	</div>
+</li>`);
+              } else {
+                point.append(`<li><div class="profile_image small"><img class="profile_icon" data-id="${comment.user_id}" src="${comment.user_pict}" alt=""></div>
+	<div class="comment_content small">
+		<strong class="name">${htmlspecialchars(comment.name)}</strong>
+		<span>${comment.description}</span>
+		/ <a href="#comment${comment.id}"><time datetime="${comment.created.original}">${comment.created.relative}</time></a>
+	</div>
+</li>`);
+              }
+            }
+            $(this).data('loaded', true);
+            $(this).text('대화닫기');
+            drawer.show();
+          }
+          indicator.stop();
+          return pointer.text('');
+        }, 'json');
+      }
+    } else {
+      drawer.hide();
+      $(this).html('대화보기');
+    }
+    return false;
+  });
+  $(document).on('click', list.selector + ' > li > div.buttons a.reply', function() {
+    var comment_id, offset, username;
+    comment_id = $(this).parents('li').data('id');
+    username = $(this).parents('li').find('div.name.time strong').text();
+    replyIndicator.slideDown().find('a:first').attr('href', '#comment' + comment_id).text(username + '님의 댓글에 대한 답글입니다.');
+    replyIndicator.find('input[name=parent]').val(comment_id);
+    offset = replyIndicator.offset();
+    $(window).scrollTop(offset.top - 10);
+    $('textarea', form).focus();
+    return false;
+  });
+  $(document).on('click', list.selector + ' > li > div.buttons a.edit', function() {
+    var cmt_id, node;
+    node = $(this).parents('li');
+    cmt_id = node.data('id');
+    $.post(base_url + 'comment/check_editable_ajax/' + cmt_id, function(response) {
+      var _form;
+      if (response.result) {
+        _form = $(`<li class="comment_editor">
+	<form action="${base_url}comment/update_ajax" method="post">
+		<div class="profile_image">
+			<img src="${response.data.user_pict}" alt="">
+		</div>
+
+		<div class="form_wrapper">
+			<div class="name time">
+				<strong>${response.data.username}</strong><time datetime="${response.data.created.original}">${response.data.created.relative}</time>
+			</div>
+
+			<dl class="comment_form_content">
+				<dt>댓글 본문</dt>
+				<dd>
+					<textarea name="cmt_content">${response.data.content}</textarea>
+				</dd>
+			</dl>
+
+			<dl class="comment_form_password">
+				<dt class="hidden">비밀번호</dt>
+				<dd><input type="password" name="password" placeholder="비밀번호"></dd>
+			</dl>
+
+			<div class="comment_form_footer">
+				<input type="hidden" name="cmt_id" value="${cmt_id}">
+				<button class="btn_close">닫기</button>
+				<div class="column_left"><input type="checkbox" id="is_question" name="is_question" ${response.data.is_question === 'yes' ? 'checked' : void 0}><span>답변을 원하는 질문입니다.</span></div>
+				<div class="column_right"><button type="submit"><span>댓글 수정</span></button></div>
+			</div>
+		</div>
+	</form>
+</li>`);
+        if (response.data.loggedin) {
+          _form.find('dl.comment_form_password').remove();
+        }
+        return node.hide().after(_form);
+      } else {
+        return xalert(null, response.msg, {
+          modal: true
+        });
+      }
+    }, 'json');
+    return false;
+  });
+  $(document).on('click', list.selector + ' > li > div.buttons a.delete', function() {
+    var node, question;
+    node = $(this).parents('li');
+    if (user_id > 0) {
+      question = '<p>삭제하시겠습니까?</p>';
+    } else {
+      question = '<p>삭제하시겠습니까?</p><input type="password" name="password" placeholder="비밀번호">';
+    }
+    dialogDelete.show(function(dialog) {
+      var data;
+      data = {
+        'id': node.data('id')
+      };
+      if (dialog.find('input[type=password]').size() > 0) {
+        data['password'] = dialog.find('input[type=password]').val();
+      }
+      return $.post(base_url + 'comment/delete_ajax', data, function(response) {
+        if (response.result) {
+          return node.remove();
+        } else {
+          return xalert(null, response.msg, {
+            modal: true
+          });
+        }
+      }, 'json');
+    }, null, question, options);
+    dialogDelete.dom.appendTo($(this).parents('li'));
+    return false;
+  });
+  $(document).on('click', list.selector + ' > li.comment_editor button.btn_close', function() {
+    var _form;
+    _form = $(this).parents('li.comment_editor');
+    _form.prev().show();
+    _form.remove();
+    return false;
+  });
+  $(document).on('submit', list.selector + ' > li.comment_editor form', function() {
+    var data, indicator, node, pwd, text;
+    text = $(this).find('.comment_form_footer button span');
+    node = $(this).parent();
+    data = {
+      'id': $(this).find('input[name=cmt_id]').val(),
+      'content': $(this).find('textarea').val(),
+      'is_question': $(this).find('input[name=is_question]:checked').size() ? 'yes' : 'no'
+    };
+    if (data.content.length === 0) {
+      xalert(null, '댓글 내용을 입력해 주세요.', {
+        modal: true
+      });
+      return false;
+    } else if (!user_id) {
+      pwd = $(this).find('input[name=password]');
+      if (pwd.length === 0) {
+        xalert(null, '잘못된 접근입니다.', {
+          modal: true
+        });
+        return false;
+      }
+      if (pwd.val().length === 0) {
+        xalert(null, '비밀번호를 입력해 주세요.', {
+          modal: true
+        });
+        return false;
+      }
+      data.password = pwd.val();
+    }
+    indicator = new ProcessIndicator($(this).find('.comment_form_footer button[type=submit]'), {
+      lines: 9,
+      length: 4,
+      width: 2,
+      radius: 4
+    }, '#fff');
+    indicator.start();
+    text.css('visibility', 'hidden');
+    $.post($(this).attr('action'), data, function(response) {
+      var onode;
+      if (response.result) {
+        onode = node.prev();
+        onode.show().find(' > div.comment_content').html(response.data.description);
+        onode.attr('data-is-question', data.is_question);
+        node.remove();
+      } else {
+        xalert(null, response.msg, {
+          modal: true
+        });
+      }
+      indicator.stop();
+      return text.css('visibility', 'visible');
+    }, 'json');
+    return false;
+  });
+  $(document).on('click', list.selector + ' > li a[href^="#comment"]', function() {
+    var comment_id, node, target;
+    node = $(this).parents('li');
+    comment_id = $(this).attr('href').substr(8);
+    target = $(' > li a[name="comment' + comment_id + '"]', list);
+    if (target.size() > 0) {
+      return true;
+    } else {
+      return $.getJSON(base_url + 'comment/get_ajax/' + comment_id, function(response) {
+        var buttons, comment, template;
+        if (response.result) {
+          comment = response.data;
+          if (comment.created === null && comment.updated === null) {
+            return xalert(null, '존재하지 않는 댓글입니다.', {
+              modal: true
+            });
+          } else {
+            template = $(`<li class="calling_alone" data-id="${comment.id}">
+	<div class="profile_image">
+		<img class="profile_icon" data-id="${comment.user_id}" src="${comment.user_pict}" alt="">
+	</div>
+
+	<div class="name time">
+		<strong>${comment.name}</strong><a href="#comment${comment.id}" name="comment${comment.id}"><time datetime="${comment.created.original}">${comment.created.relative}</time></a>
+	</div>
+
+	<div class="comment_content">
+		${comment.description}
+	</div>
+</li>`);
+            if (comment.parent > 0) {
+              template.append(`<dl class="parents">
+	<dt><a href="#" data-parent="${comment.parent}">대화보기</a><span></span></dt>
+	<dd>
+		<ul></ul>
+	</dd>
+</dl>`);
+            }
+            buttons = '<div class="buttons">';
+            if (user_id) {
+              if (user_id === comment.cm_owner_user_id || user_id === comment.user_id) {
+                buttons += `<a class="reply" href="#">답글</a>|<a class="edit" href="#">수정</a>|<a class="delete" href="#" data-user_id="${comment.user_id}">삭제</a>`;
+              } else {
+                buttons += '<a class="reply" href="#">답글</a>';
+              }
+            } else {
+              if (!comment.user_id) {
+                buttons += '<a class="reply" href="#">답글</a>|<a class="edit" href="#">수정</a>|<a class="delete" href="#" data-user_id="0">삭제</a>';
+              } else {
+                buttons += '<a class="reply" href="#">답글</a>';
+              }
+            }
+            buttons += '</div>';
+            template.append(buttons);
+            node.before(template.hide());
+            //setFlash template
+            return template.slideDown();
+          }
+        } else {
+          return xalert(null, response.msg, {
+            modal: true
+          });
+        }
+      });
+    }
+  });
+  filterComment = function() {
+    if ($('#show_question_only input:checked').size() > 0) {
+      return $('li[data-is-question=no]').hide();
+    } else {
+      return $('li[data-is-question=no]').show();
+    }
+  };
+  $(document).on('click', '#show_question_only', function() {
+    return filterComment();
+  });
+  $(document).on('click', '#cmt_more a', function() {
+    var data, indicator, text;
+    text = $('span', this);
+    data = {
+      course_id: $('input[name=course_id]', form).val(),
+      module_id: $('input[name=module_id]', form).val(),
+      topic_id: $('input[name=topic_id]', form).val(),
+      page: ++page
+    };
+    indicator = new ProcessIndicator('#cmt_more', PROCESSINDICATOR_SMALL);
+    indicator.start();
+    text.css('visibility', 'hidden');
+    $.getJSON(base_url + 'comment', data, function(response) {
+      var buttons, comment, i, index, len, ref, template;
+      if (response.errorCode === 0) {
+        ref = response.data.comments;
+        for (index = i = 0, len = ref.length; i < len; index = ++i) {
+          comment = ref[index];
+          template = $(`<li data-id="${comment.id}" data-is-question="${comment.is_question}">
+	<div class="profile_image">
+		<img class="profile_icon" data-id="${comment.user_id}" src="${comment.user_pict}" alt="">
+	</div>
+
+	<div class="name time">
+		<strong>${comment.name}</strong><a href="#comment${comment.id}" name="comment${comment.id}"><time datetime="${comment.created.original}">${comment.created.relative}</time></a>
+	</div>
+
+	<div class="comment_content">
+		${comment.description}
+	</div>
+</li>`);
+          if (comment.parent > 0) {
+            template.append(`<dl class="parents">
+	<dt><a href="#" data-parent="${comment.parent}">대화보기</a><span></span></dt>
+	<dd>
+		<ul></ul>
+	</dd>
+</dl>`);
+          }
+          buttons = '<div class="buttons">';
+          if (user_id) {
+            if (user_id === comment.user_id) {
+              buttons += `<a class="reply" href="#">답글</a>|<a class="edit" href="#">수정</a>|<a class="delete" href="#">삭제</a>`;
+            } else if (comment.topic_id > 0 || (comment.course_id === 0 && comment.module_id > 0)) {
+              if (comment.module.user_id === user_id) {
+                buttons += '<a class="reply" href="#">답글</a>|<a class="delete" href="#">삭제</a>';
+              } else {
+                buttons += '<a class="reply" href="#">답글</a>';
+              }
+            } else if (comment.course_id > 0) {
+              if (comment.course.user_id === user_id) {
+                buttons += '<a class="reply" href="#">답글</a>|<a class="delete" href="#">삭제</a>';
+              } else {
+                buttons += '<a class="reply" href="#">답글</a>';
+              }
+            }
+          } else {
+            if (comment.user_id === 0) {
+              buttons += '<a class="reply" href="#">답글</a>|<a class="edit" href="#">수정</a>|<a class="delete" href="#">삭제</a>';
+            } else {
+              buttons += '<a class="reply" href="#">답글</a>';
+            }
+          }
+          buttons += '</div>';
+          template.append(buttons);
+          list.append(template.hide());
+          //setFlash template
+          template.slideDown();
+        }
+        filterComment();
+        if (response.data.isLast) {
+          $('#cmt_more').hide();
+        }
+      } else if (response.errorCode === 9999) {
+        $('#cmt_more').hide();
+        xalert(null, response.msg, {
+          modal: true
+        });
+      } else {
+        xalert(null, '알 수 없는 에러가 발생했습니다.', {
+          modal: true
+        });
+      }
+      indicator.stop();
+      return text.css('visibility', 'visible');
+    });
+    return false;
+  });
+  if (hash.length > 0 && /^comment/.test(hash)) {
+    target = $('a[name="' + hash + '"]', list);
+    if (target.size() === 0) {
+      return $.getJSON(base_url + 'comment/get_ajax/' + hash.substr(7), function(response) {
+        var buttons, comment, template;
+        if (response.result) {
+          comment = response.data;
+          if (comment.created === null && comment.updated === null) {
+            return xalert(null, '존재하지 않는 댓글입니다.', {
+              modal: true
+            });
+          } else {
+            template = $(`<li class="calling_alone" data-id="${comment.id}">
+	<div class="profile_image">
+		<img class="profile_icon" data-id="${comment.user_id}" src="${comment.user_pict}" alt="">
+	</div>
+
+	<div class="name time">
+		<strong>${comment.name}</strong><a href="#comment${comment.id}" name="comment${comment.id}"><time datetime="${comment.created.original}">${comment.created.relative}</time></a>
+	</div>
+
+	<div class="comment_content">
+		${comment.description}
+	</div>
+</li>`);
+            if (comment.parent > 0) {
+              template.append(`<dl class="parents">
+	<dt><a href="#" data-parent="${comment.parent}">대화보기</a><span></span></dt>
+	<dd>
+		<ul></ul>
+	</dd>
+</dl>`);
+            }
+            buttons = '<div class="buttons">';
+            if (user_id) {
+              if (user_id === comment.cm_owner_user_id || user_id === comment.user_id) {
+                buttons += `<a class="reply" href="#">답글</a>|<a class="edit" href="#">수정</a>|<a class="delete" href="#" data-user_id="${comment.user_id}">삭제</a>`;
+              } else {
+                buttons += '<a class="reply" href="#">답글</a>';
+              }
+            } else {
+              if (!comment.user_id) {
+                buttons += '<a class="reply" href="#">답글</a>|<a class="edit" href="#">수정</a>|<a class="delete" href="#" data-user_id="0">삭제</a>';
+              } else {
+                buttons += '<a class="reply" href="#">답글</a>';
+              }
+            }
+            buttons += '</div>';
+            template.append(buttons);
+            list.prepend(template.hide());
+            return template.slideDown();
+          }
+        } else {
+          return xalert(null, response.msg, {
+            modal: true
+          });
+        }
+      });
+    } else {
+      return target.parents('li').addClass('calling_alone');
+    }
+  }
+})(jQuery);

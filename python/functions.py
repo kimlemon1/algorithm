@@ -7,8 +7,31 @@ def check_palindrome(word:str):
         
         start += 1
         end -= 1
-
     return True
+
+
+def substring(s, t):
+    len_s = len(s)
+    len_t = len(t)
+    flag = 0
+    if (len(t)==0) or (len_t > len_s):
+        return flag
+    for i in range(len_s):
+        if s[i] == t[0]:
+            if (len(s[i:]) >= len(t)):
+                for j in range(len_t):
+                    if s[i+j] != t[j]:
+                        flag = 0
+                        break
+                    else:
+                        flag = 1
+                        continue
+                if flag:
+                    break
+            else:
+                flag = 0
+    return flag
+
 
 def insertion_sort(L):
     for i in range(1,len(L)):
@@ -61,3 +84,18 @@ def counting_sort(list): # 양의 정수만 있는 리스트, max를 알 때 가
         idx = count[list[k]]
         output[idx] = list[k]
     return output
+
+def bfs(G:dict,s:GNode):
+    queue = [s]
+    visited = [s]
+
+    while (len(queue)!=0):
+        cur = queue[0]
+        queue.pop(0)
+        adj_vertices = G[cur]
+        for vertex in adj_vertices:
+            if vertex not in visited:
+                vertex.distance = cur.distance + 1
+                visited.append(vertex)
+                queue.append(vertex)
+    return visited
