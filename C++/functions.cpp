@@ -46,3 +46,11 @@ std::vector<int> vecSlice(std::vector<int> inp, int a, int b) {
 // string.substr() // string[:]
 
 
+char ch[100];
+string a = "I wanna go to bed";
+strcpy(ch,a.c_str());
+
+char ch2[100] = {"Oh my god"};
+string str(ch2);
+
+cout <<str<<endl;
