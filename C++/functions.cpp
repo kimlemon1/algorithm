@@ -111,3 +111,15 @@ char ch2[100] = {"Oh my god"};
 string str(ch2);
 
 cout <<str<<endl;
+
+
+// stringstream : string에서 다른 자료형 뽑기
+#include <sstream> 
+
+int num;
+string str = "123 456\n789 012";
+stringstream stream(str);
+// 한글자씩 숫자 들어감, \n 또는 \0만날때까지 
+while(stream >> num){
+    cout << num << endl;
+}

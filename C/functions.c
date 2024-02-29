@@ -248,3 +248,17 @@ void get_common_elements_array(int *array1, int *array2, int *result){
         }
     }
 
+
+// 문자열 입력받기
+char s1[10];
+scanf("%s", s1);
+
+// 여러 문자열 입력받기
+char s1[5][100];
+for (int i=0;i<5;i++){
+    scanf("%s", s1[i]);
+}
+// 여러 문자열 출력
+for (int i=0;i<5;i++){
+    printf("%s\n", s1[i]);
+}
