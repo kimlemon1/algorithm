@@ -210,16 +210,6 @@ void rvereseArray(int arr[], int start, int end)
     } 
 } 
   
-/* Utility that prints out an array on a line */
-void printArray(int arr[], int size) 
-{ 
-    int i; 
-    for (i = 0; i < size; i++) 
-        printf("%d ", arr[i]); 
-  
-    printf("\n"); 
-} 
-
 int find_maxval_in_array(int arr[], int n)
 {
     int i;
@@ -277,3 +267,29 @@ void get_common_elements_array(int *array1, int *array2, int *result){
         }
     }
 
+
+// 문자열 입력받기
+char s1[10];
+scanf("%s", s1);
+
+// 여러 문자열 입력받기
+char s1[5][100];
+for (int i=0;i<5;i++){
+    scanf("%s", s1[i]);
+}
+// 여러 문자열 출력
+for (int i=0;i<5;i++){
+    printf("%s\n", s1[i]);
+}
+
+bool check_in_array(int* arr,int arr_len, int val){
+    int not_in_arr_flag = 1;
+    for (int i=0; i<arr_len;i++){
+        if (val == arr[i]){
+            not_in_arr_flag = 0;
+            break;
+        }
+    }
+    if (not_in_arr_flag) return false;
+    else return true;
+}

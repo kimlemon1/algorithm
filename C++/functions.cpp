@@ -96,11 +96,40 @@ vector<int> get_key_vector_from_map(map<int,vector<int>> m){
     return key;
 }
 
+<<<<<<< HEAD
+=======
+
+// string to char
+
+>>>>>>> fa73c627ec64335e3c02fc75b5777eb87d938ab3
 char ch[100];
 string a = "I wanna go to bed";
 strcpy(ch,a.c_str());
+
+<<<<<<< HEAD
+char ch2[100] = {"Oh my god"};
+string str(ch2);
+
+cout <<str<<endl;
+=======
+cout<<ch<<endl;
+
+// char to string
 
 char ch2[100] = {"Oh my god"};
 string str(ch2);
 
 cout <<str<<endl;
+
+
+// stringstream : string에서 다른 자료형 뽑기
+#include <sstream> 
+
+int num;
+string str = "123 456\n789 012";
+stringstream stream(str);
+// 한글자씩 숫자 들어감, \n 또는 \0만날때까지 
+while(stream >> num){
+    cout << num << endl;
+}
+>>>>>>> fa73c627ec64335e3c02fc75b5777eb87d938ab3

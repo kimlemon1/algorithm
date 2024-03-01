@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <iostream>
 #include <string>
 using namespace std;
@@ -9,3 +10,6 @@ int main(){
 
     cout<<ch<<endl;
 }
+=======
+#include <stdlib
+>>>>>>> fa73c627ec64335e3c02fc75b5777eb87d938ab3
