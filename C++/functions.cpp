@@ -96,22 +96,13 @@ vector<int> get_key_vector_from_map(map<int,vector<int>> m){
     return key;
 }
 
-<<<<<<< HEAD
-=======
 
 // string to char
 
->>>>>>> fa73c627ec64335e3c02fc75b5777eb87d938ab3
 char ch[100];
 string a = "I wanna go to bed";
 strcpy(ch,a.c_str());
 
-<<<<<<< HEAD
-char ch2[100] = {"Oh my god"};
-string str(ch2);
-
-cout <<str<<endl;
-=======
 cout<<ch<<endl;
 
 // char to string
@@ -132,4 +123,3 @@ stringstream stream(str);
 while(stream >> num){
     cout << num << endl;
 }
->>>>>>> fa73c627ec64335e3c02fc75b5777eb87d938ab3
