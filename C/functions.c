@@ -293,3 +293,20 @@ bool check_in_array(int* arr,int arr_len, int val){
     if (not_in_arr_flag) return false;
     else return true;
 }
+
+// char to int, string(char*) to int
+int ctoi(char b){
+    return b - '0';
+}
+
+int strtoi(char* a){
+    return atoi(a);
+}
+
+
+// when malloc, be carefull to initialize
+void string_malloc_init(char* string, int heap_size){
+    for (int i=0; i< heap_size){
+        string[i] = '\0';
+    }
+}
