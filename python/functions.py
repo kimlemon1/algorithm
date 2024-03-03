@@ -99,3 +99,10 @@ def bfs(G:dict,s:GNode):
                 visited.append(vertex)
                 queue.append(vertex)
     return visited
+
+
+# string split
+s = "I have pizza"
+ans = s.split(' ')   # list [I, have, pizza]
+# list to string
+new_string = ' '.join(ans) # "I have pizza"
