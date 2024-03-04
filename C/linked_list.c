@@ -20,7 +20,7 @@ void traverse(LL *ll);
 Node* make_node(const int val);
 void initialize_LL(LL *new_ll);
 void delete_all(LL *ll);
-
+void reverselist(LL *L);
 
 int main(){
     LL *ll = (LL*)malloc(sizeof(LL));
@@ -32,6 +32,8 @@ int main(){
     push_back(ll, 3);
 
     insert(ll, 4, 99);
+    traverse(ll);
+    reverselist(ll);
     traverse(ll);
     delete_all(ll);
     insert(ll,0,100);
@@ -130,6 +132,19 @@ Node* make_node(const int val){
     root ->val = val;
     root ->next_node = NULL;
     return root;
+}
+
+void reverselist(LL *L){
+    Node *prev = NULL;
+    Node *cur = L->root;
+    Node *next = NULL;
+    while (cur != NULL){
+        next = cur->next_node;
+        cur->next_node = prev;
+        prev = cur;
+        cur = next;
+    }
+    L->root = prev;
 }
 
 void initialize_LL(LL *new_ll){
